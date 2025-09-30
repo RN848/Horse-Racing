@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/Users/ryanalmalky/Desktop/Backend/Backend/Backend.csproj": {}
+    "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj": {}
   },
   "projects": {
-    "/Users/ryanalmalky/Desktop/Backend/Backend/Backend.csproj": {
+    "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/ryanalmalky/Desktop/Backend/Backend/Backend.csproj",
+        "projectUniqueName": "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "/Users/ryanalmalky/Desktop/Backend/Backend/Backend.csproj",
+        "projectPath": "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj",
         "packagesPath": "/Users/ryanalmalky/.nuget/packages/",
-        "outputPath": "/Users/ryanalmalky/Desktop/Backend/Backend/obj/",
+        "outputPath": "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/ryanalmalky/.nuget/NuGet/NuGet.Config"
@@ -45,9 +45,29 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
-            "Microsoft.AspNetCore.OpenApi": {
+            "AutoMapper": {
               "target": "Package",
-              "version": "[9.0.1, )"
+              "version": "[15.0.1, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[9.0.0, )"
+            },
+            "Pomelo.EntityFrameworkCore.MySql": {
+              "target": "Package",
+              "version": "[9.0.0, )"
             }
           },
           "imports": [
