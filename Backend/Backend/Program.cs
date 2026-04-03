@@ -10,13 +10,21 @@ var connectionString =
 builder.Services.AddDbContext<DbContextApp>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp",
+        policy => policy.AllowAnyOrigin() // For dev only
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
 
 builder.Services.AddControllers();
 
 builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile));
 var app = builder.Build();
+
+app.UseCors("AllowReactApp");
 
 app.UseHttpsRedirection();
 
