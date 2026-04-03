@@ -4,6 +4,7 @@ using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(DbContextApp))]
-    partial class DbContextAppModelSnapshot : ModelSnapshot
+    [Migration("20260402031649_InitialDeliverySchema")]
+    partial class InitialDeliverySchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,18 +72,6 @@ namespace Backend.Migrations
                     b.HasKey("RoomId");
 
                     b.ToTable("location", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            RoomId = "A-101",
-                            Description = "Emergency Room"
-                        },
-                        new
-                        {
-                            RoomId = "LAB-05",
-                            Description = "Pathology Lab"
-                        });
                 });
 
             modelBuilder.Entity("Backend.Models.Sample", b =>
@@ -124,29 +115,9 @@ namespace Backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("varchar(50)");
-
                     b.HasKey("StaffId");
 
                     b.ToTable("staff", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            StaffId = 1,
-                            FullName = "Rayan Robot-Operator",
-                            JobTitle = "Technician",
-                            Password = "1234",
-                            Username = "fdsfdsf"
-                        });
                 });
 
             modelBuilder.Entity("Backend.Models.DeliveryRequest", b =>

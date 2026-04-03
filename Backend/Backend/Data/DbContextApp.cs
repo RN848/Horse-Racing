@@ -11,14 +11,10 @@ public class DbContextApp : DbContext
     {
     }
     
-    public DbSet<Horse> Horses { get; set; } = null!;
-    public DbSet<Owner> Owners { get; set; } = null!;
-    public DbSet<Owns> Owns { get; set; } = null!;
-    public DbSet<Race> Races { get; set; } = null!;
-    public DbSet<RaceResults> RaceResults { get; set; } = null!;
-    public DbSet<Stable> Stables { get; set; } = null!;
-    public DbSet<Track> Tracks { get; set; } = null!;
-    public DbSet<Trainer> Trainers { get; set; } = null!;
+    public DbSet<Staff> Staffs { get; set; } = null!;
+    public DbSet<Location> Locations { get; set; } = null!;
+    public DbSet<DeliveryRequest> DeliveryRequests { get; set; } = null!;
+    public DbSet<Sample> Samples { get; set; } = null!;
 
     
     
@@ -27,51 +23,43 @@ public class DbContextApp : DbContext
     {
         
         
-        // Horse.Gender
+        // Configure Table Names to match your SQL exactly
+        modelBuilder.Entity<Staff>().ToTable("staff");
+        modelBuilder.Entity<Location>().ToTable("location");
+        modelBuilder.Entity<DeliveryRequest>().ToTable("delivery_request");
+        modelBuilder.Entity<Sample>().ToTable("sample");
+
+        // Set up the Relationship for Origin Room
+        modelBuilder.Entity<DeliveryRequest>()
+            .HasOne(d => d.Origin)
+            .WithMany(l => l.OriginRequests)
+            .HasForeignKey(d => d.OriginRoomId)
+            .OnDelete(DeleteBehavior.Restrict); // Prevents accidental deletion cycles
+
+        // Set up the Relationship for Destination Room
+        modelBuilder.Entity<DeliveryRequest>()
+            .HasOne(d => d.Destination)
+            .WithMany(l => l.DestinationRequests)
+            .HasForeignKey(d => d.DestinationRoomId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // Default value for RequestTime
+        modelBuilder.Entity<DeliveryRequest>()
+            .HasOne(d => d.Destination)
+            .WithMany(l => l.DestinationRequests)
+            .HasForeignKey(d => d.DestinationRoomId)
+            .OnDelete(DeleteBehavior.Restrict);
         
-        var genderConverter = new ValueConverter<Gender?, string>(
-            v => v.HasValue ? v.Value.ToString().Substring(0, 1) : null,   // Enum → "F", "C", ...
-            v => string.IsNullOrEmpty(v) ? null : Enum.Parse<Gender>(v, true) // "F" → Gender.F
+        modelBuilder.Entity<Location>().HasData(
+            new Location { RoomId = "A-101", Description = "Emergency Room" },
+            new Location { RoomId = "LAB-05", Description = "Pathology Lab" }
+        );
+        
+        modelBuilder.Entity<Staff>().HasData(
+            new Staff { StaffId = 1, Username = "fdsfdsf" , Password = "1234" ,FullName = "Rayan Robot-Operator", JobTitle = "Technician" }
         );
 
-        modelBuilder.Entity<Horse>(entity =>
-        {
-            entity.Property(h => h.Gender)
-                .HasConversion(genderConverter)  // convert enum <-> char(1)
-                .HasMaxLength(1)
-                .HasColumnType("char(1)");    // ensures CHAR(1) instead of VARCHAR(1)
-        });
-        
-        
-        // Owns Composite keys
-        
-        modelBuilder.Entity<Owns>()
-            .HasKey(o => new { o.OwnerId, o.HorseId });
-        
-        modelBuilder.Entity<Owner>()
-            .HasMany(o => o.Horses)
-            .WithMany(h => h.Owners)
-            .UsingEntity<Owns>(
-                j => j.HasOne(x => x.Horse).WithMany(h => h.Owns).HasForeignKey(x => x.HorseId),
-                j => j.HasOne(x => x.Owner).WithMany(o => o.Owns).HasForeignKey(x => x.OwnerId),
-                j => j.ToTable("Owns")
-            );
-        
-        // RaceResults Composite keys
-        
-        modelBuilder.Entity<RaceResults>()
-            .HasKey(rr => new { rr.RaceId, rr.HorseId });
-        
-        modelBuilder.Entity<Stable>().HasData(SeedData.Stables);
-        modelBuilder.Entity<Horse>().HasData(SeedData.Horses);
-        modelBuilder.Entity<Owner>().HasData(SeedData.Owners);
-        modelBuilder.Entity<Owns>().HasData(SeedData.Owns);
-        modelBuilder.Entity<Trainer>().HasData(SeedData.Trainers);
-        modelBuilder.Entity<Track>().HasData(SeedData.Tracks);
-        modelBuilder.Entity<Race>().HasData(SeedData.Races);
-        modelBuilder.Entity<RaceResults>().HasData(SeedData.RaceResults);
-        
-        
+
     }
 
 

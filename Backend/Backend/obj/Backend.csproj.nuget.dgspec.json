@@ -1,26 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj": {}
+    "/Users/rayan/Desktop/SP-backend/Horse-Racing/Backend/Backend/Backend.csproj": {}
   },
   "projects": {
-    "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj": {
+    "/Users/rayan/Desktop/SP-backend/Horse-Racing/Backend/Backend/Backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj",
+        "projectUniqueName": "/Users/rayan/Desktop/SP-backend/Horse-Racing/Backend/Backend/Backend.csproj",
         "projectName": "Backend",
-        "projectPath": "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/Backend.csproj",
-        "packagesPath": "/Users/ryanalmalky/.nuget/packages/",
-        "outputPath": "/Users/ryanalmalky/Desktop/Horse-Racing/Backend/Backend/obj/",
+        "projectPath": "/Users/rayan/Desktop/SP-backend/Horse-Racing/Backend/Backend/Backend.csproj",
+        "packagesPath": "/Users/rayan/.nuget/packages/",
+        "outputPath": "/Users/rayan/Desktop/SP-backend/Horse-Racing/Backend/Backend/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/ryanalmalky/.nuget/NuGet/NuGet.Config"
+          "/Users/rayan/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "/usr/local/share/dotnet/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -39,7 +38,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -89,7 +88,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.102/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.312/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

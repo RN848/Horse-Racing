@@ -5,10 +5,12 @@ using Backend.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString =
-    "Server=localhost;Database=HorseRacingDB;User ID=root;Password=8484884848;Port=3306;";
+    "Server=localhost;Database=SP-backend;User ID=root;Password=8484884848;Port=3306;";
 
 builder.Services.AddDbContext<DbContextApp>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+
 
 
 builder.Services.AddControllers();

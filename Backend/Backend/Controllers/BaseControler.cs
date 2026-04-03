@@ -1,48 +1,102 @@
-using AutoMapper;
 using Backend.Data;
-using Backend.Dtos;
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Backend.Dtos;
 
 namespace Backend.Controllers
 {
-    
-    
     [ApiController]
     [Route("api/[controller]")]
-    public class BaseController : ControllerBase
+    public class DeliveryController : ControllerBase // Renamed from BaseController for clarity
     {
-        
-        // dbcontext
-        private DbContextApp _dbContext;
-        private IMapper _mapper;
-        public BaseController(DbContextApp dbContext , IMapper mapper)
+        private readonly DbContextApp _dbContext;
+
+        public DeliveryController(DbContextApp dbContext)
         {
             _dbContext = dbContext;
-            _mapper = mapper;
         }
         
-        [HttpGet("horses/{id}")]
-        public IActionResult GetHorse(string id)
+        
+        [HttpPost("send-robot")]
+        public async Task<IActionResult> SendRobot([FromBody] CreateDeliveryDto dto)
         {
-            var horse = _dbContext.Horses
-                .Include(h => h.RaceResults)
-                .FirstOrDefault(h => h.HorseId == id);
-            
-            if (horse == null) return NotFound();
-            
-            var dto = _mapper.Map<HorseDto>(horse);
-            
-            return Ok(dto);
+            if (dto == null || !dto.Samples.Any())
+            {
+                return BadRequest("Request must contain at least one sample.");
+            }
+
+            // 1. Create the Delivery Request object
+            var newRequest = new DeliveryRequest
+            {
+                OriginRoomId = dto.OriginRoomId,
+                DestinationRoomId = dto.DestinationRoomId,
+                RequesterId = dto.StaffId, 
+                RequestTime = DateTime.Now // C# handles the time as we planned
+            };
+
+            // 2. Map the Samples from the DTO to the Model
+            foreach (var s in dto.Samples)
+            {
+                newRequest.Samples.Add(new Sample
+                {
+                    SampleUniqueId = s.SampleId,
+                    SampleType = s.SampleType
+                });
+            }
+
+            // 3. Save to Database
+            _dbContext.DeliveryRequests.Add(newRequest);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { 
+                message = "Robot dispatched successfully!", 
+                requestId = newRequest.RequestId 
+            });
         }
         
-        
-        
-        [HttpPost("races")]
-        public IActionResult AddRase([FromBody] RaceDto race)
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginDto login)
         {
-            return Ok(race);
+            // 1. Look for the user in the database
+            var user = _dbContext.Staffs
+                .FirstOrDefault(u => u.Username == login.Username && u.Password == login.Password);
+
+            // 2. If not found, return 401 Unauthorized
+            if (user == null)
+            {
+                return Unauthorized(new { message = "Invalid username or password" });
+            }
+
+            // 3. If found, return the user info (so the UI knows who is logged in)
+            return Ok(new {
+                message = "Login successful!",
+                staffId = user.StaffId,
+                fullName = user.FullName
+            });
         }
+        
+        // GET: api/delivery/my-history/1
+        [HttpGet("my-history/{staffId}")]
+        public async Task<IActionResult> GetMyHistory(int staffId)
+        {
+            var history = await _dbContext.DeliveryRequests
+                .Where(d => d.RequesterId == staffId)
+                .Select(d => new DeliveryHistoryDto 
+                {
+                    RequestId = d.RequestId,
+                    OriginRoom = d.OriginRoomId,
+                    DestinationRoom = d.DestinationRoomId,
+                    Time = d.RequestTime,
+                    SampleIds = d.Samples.Select(s => s.SampleUniqueId).ToList()
+                })
+                .OrderByDescending(d => d.Time)
+                .ToListAsync();
+
+            return Ok(history);
+        }
+        
     }
+    
+    
 }
