@@ -96,6 +96,119 @@ namespace Backend.Controllers
             return Ok(history);
         }
         
+        
+        // GET: api/delivery/rooms
+        [HttpGet("rooms")]
+        public async Task<IActionResult> GetRooms()
+        {
+            // Fetch all locations from the database
+            var rooms = await _dbContext.Locations
+                .Select(l => new {
+                    l.RoomId,
+                    l.Description
+                })
+                .ToListAsync();
+
+            return Ok(rooms);
+        }
+        
+        // GET: api/delivery/my-waiting/{staffId}
+        [HttpGet("my-waiting/{staffId}")]
+        public async Task<IActionResult> GetMyWaiting(int staffId)
+        {
+            var waiting = await _dbContext.DeliveryRequests
+                .Where(d => d.RequesterId == staffId && d.Status == "Waiting")
+                .Select(d => new WaitingRequestDto
+                {
+                    RequestId = d.RequestId,
+                    OriginRoomId = d.OriginRoomId,
+                    DestinationRoomId = d.DestinationRoomId,
+                    Status = d.Status,
+                    Samples = d.Samples.Select(s => new SampleSummaryDto 
+                    {
+                        SampleId = s.SampleUniqueId,
+                        SampleType = s.SampleType
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return Ok(waiting);
+        }
+
+// 2. Confirm pickup and change status to "In Transit"
+        [HttpPost("confirm-pickup/{requestId}")]
+        public async Task<IActionResult> ConfirmPickup(int requestId)
+        {
+            var request = await _dbContext.DeliveryRequests.FindAsync(requestId);
+            if (request == null) return NotFound();
+
+            request.Status = "In Transit";
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Robot is now moving to destination!" });
+        }
+        
+        [HttpGet("my-transit/{staffId}")]
+        public async Task<IActionResult> GetMyInTransit(int staffId)
+        {
+            var moving = await _dbContext.DeliveryRequests
+                .Where(d => d.RequesterId == staffId && d.Status == "In Transit")
+                .Select(d => new TransitRequestDto
+                {
+                    RequestId = d.RequestId,
+                    OriginRoomId = d.OriginRoomId,
+                    DestinationRoomId = d.DestinationRoomId,
+                    Status = d.Status,
+                    RequestTime = d.RequestTime,
+                    Samples = d.Samples.Select(s => new SampleSummaryDto
+                    {
+                        SampleId = s.SampleUniqueId,
+                        SampleType = s.SampleType
+                    }).ToList()
+                })
+                .OrderBy(d => d.RequestId)
+                .ToListAsync();
+
+            return Ok(moving);
+        }
+
+// 2. Confirm the robot has reached the destination
+        [HttpPost("confirm-arrival/{requestId}")]
+        public async Task<IActionResult> ConfirmArrival(int requestId)
+        {
+            var request = await _dbContext.DeliveryRequests.FindAsync(requestId);
+            if (request == null) return NotFound();
+
+            request.Status = "Completed";
+            request.ArrivalTime = DateTime.Now; // Record the exact time it reached
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(new { message = "Delivery marked as Completed!" });
+        }
+        
+        [HttpGet("all-trips/{staffId}")]
+        public async Task<IActionResult> GetAllTrips(int staffId)
+        {
+            return Ok(await _dbContext.DeliveryRequests
+                .Where(d => d.RequesterId == staffId)
+                .Select(d => new DeliveryResponseDto
+                {
+                    RequestId = d.RequestId,
+                    OriginRoomId = d.OriginRoomId,
+                    DestinationRoomId = d.DestinationRoomId,
+                    Status = d.Status,
+                    RequestTime = d.RequestTime,
+                    ArrivalTime = d.ArrivalTime,
+                    Samples = d.Samples.Select(s => new SampleDto
+                    {
+                        SampleId = s.SampleUniqueId,
+                        SampleType = s.SampleType
+                    }).ToList()
+                })
+                .OrderByDescending(d => d.RequestTime)
+                .ToListAsync());
+        }
+        
     }
     
     

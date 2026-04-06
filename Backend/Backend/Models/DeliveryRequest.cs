@@ -23,6 +23,11 @@ public class DeliveryRequest
     public Location Destination { get; set; } = null!;
 
     public DateTime RequestTime { get; set; } = DateTime.Now;
+    
+    [MaxLength(20)]
+    public string Status { get; set; } = "Waiting"; // Default status
+    
+    public DateTime? ArrivalTime { get; set; } // Null until the robot reaches
 
     public ICollection<Sample> Samples { get; set; } = new List<Sample>();
 }
